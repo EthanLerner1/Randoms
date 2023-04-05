@@ -1,0 +1,43 @@
+sudo apt install nginx
+
+## add the servers config files to: /etc/nginx/sites-available. i added two (server1, server2):
+# content of /etc/nginx/sites-available/server1
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+
+    server_name server1;
+        
+    ssl_certificate /home/kali/workspace/servers/server1/ssl/cert.crt;
+    ssl_certificate_key /home/kali/workspace/servers/server1/ssl/key.key;
+    location / {
+        proxy_pass https://server1:8080;
+	proxy_ssl_verify off;
+	include proxy_params;
+    }
+}
+
+#content of /etc/nginx/sites-avaliable/server2
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+
+    server_name server2;
+        
+    ssl_certificate /home/kali/workspace/servers/server2/ssl/cert.crt;
+    ssl_certificate_key /home/kali/workspace/servers/server2/ssl/key.key;
+    location / {
+        proxy_pass https://server2:8082;
+	proxy_ssl_verify off;
+	include proxy_params;
+    }
+}
+
+# in order to activate them you need to add a soft link of the config file to the /etc/nginx/sites-enabled directory
+ln -s /etc/nginx/sites-available/server2 /etc/nginx/sites-enabled/server2
+
+# and then restart the nginx service
+sudo service nginx restart
+
+# thats it
+
